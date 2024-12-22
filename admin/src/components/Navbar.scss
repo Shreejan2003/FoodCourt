@@ -1,0 +1,104 @@
+@import "./variables.scss";
+
+.navbar {
+  @import "./variables.scss";
+  background-color: white;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 1rem 1rem 0;
+  height: 100vh;
+  box-shadow: 0 0px 20px rgba(0, 0, 0, 0.2);
+  border-top-right-radius: 25px;
+  border-bottom-right-radius: 25px;
+
+  .topside {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    img {
+      width: auto;
+      height: 5rem;
+    }
+    h1 {
+      padding: 0.5rem 1rem;
+      font-family: $familyfont;
+      width: $regularfont;
+      color: $maroon;
+    }
+    // .burgercontainer {
+    //   display: flex; // Ensure flexbox is used for alignment
+    //   align-items: center; // Center vertically
+    //   justify-content: center; // Center horizontally
+    //   margin-left: 1rem;
+    //   img {
+    //     width: auto;
+    //     height: 0.5rem;
+    //   }
+    //   //   content: "";
+    //   //   background-color: $maroon;
+    //   //   position: absolute;
+    //   //   top: 50%;
+    //   //   right: -3.5px;
+    //   //   top: calc(9rem / 1.15);
+    //   //   width: 35px;
+    //   //   height: 35px;
+    //   //   border-radius: 2rem;
+    //   //   display: flex;
+    //   //   align-items: center;
+    //   //   justify-content: center;
+    // }
+  }
+  .bottomside {
+    margin: 2rem 0 0;
+    ul {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-direction: column;
+      list-style: none;
+      padding: 0;
+      margin: 3rem 0 0 0;
+
+      li {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        flex-direction: row;
+        margin: 0.75rem;
+        padding: 0.75rem 0;
+        width: 100%;
+        border-radius: 1rem;
+
+        img {
+          padding: 0 1rem;
+          width: auto;
+          height: 25px;
+        }
+        a {
+          text-decoration: none;
+          color: $darkgrey;
+          font-size: 20px;
+          font-family: $familyfont;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin: 0 0 0 rem;
+        }
+      }
+      li.active {
+        background-color: white;
+        a {
+          color: $darkgrey;
+        }
+        img {
+          color: white;
+        }
+      }
+      li:hover {
+        background-color: #ffd1d1;
+        transition: 0.25s all;
+      }
+    }
+  }
+}
