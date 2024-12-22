@@ -37,6 +37,10 @@ function Navbar() {
             <img src={analysisicon} alt="Analysis icon" />
             <Link to="/Analytics">Analytics</Link>
           </li>
+          <li>
+            <img src={Menuicon} alt="Meny icon" />
+            <Link to="/FoodList">Food List</Link>
+          </li>
         </ul>
       </div>
     </div>
