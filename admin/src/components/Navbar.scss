@@ -2,6 +2,7 @@
 
 .navbar {
   @import "./variables.scss";
+  position: fixed;
   background-color: white;
   position: absolute;
   top: 0;
@@ -23,32 +24,11 @@
     h1 {
       padding: 0.5rem 1rem;
       font-family: $familyfont;
-      width: $regularfont;
+      font-weight: $regularfont;
       color: $maroon;
     }
-    // .burgercontainer {
-    //   display: flex; // Ensure flexbox is used for alignment
-    //   align-items: center; // Center vertically
-    //   justify-content: center; // Center horizontally
-    //   margin-left: 1rem;
-    //   img {
-    //     width: auto;
-    //     height: 0.5rem;
-    //   }
-    //   //   content: "";
-    //   //   background-color: $maroon;
-    //   //   position: absolute;
-    //   //   top: 50%;
-    //   //   right: -3.5px;
-    //   //   top: calc(9rem / 1.15);
-    //   //   width: 35px;
-    //   //   height: 35px;
-    //   //   border-radius: 2rem;
-    //   //   display: flex;
-    //   //   align-items: center;
-    //   //   justify-content: center;
-    // }
   }
+
   .bottomside {
     margin: 2rem 0 0;
     ul {
@@ -86,6 +66,7 @@
           margin: 0 0 0 rem;
         }
       }
+
       li.active {
         background-color: white;
         a {
@@ -95,10 +76,27 @@
           color: white;
         }
       }
+
       li:hover {
         background-color: #ffd1d1;
         transition: 0.25s all;
       }
     }
   }
+}
+
+/* Logout Button */
+.logout-button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+    border-radius: 5px;
+}
+
+.logout-button:hover {
+    background-color: #e60000;
 }

@@ -1,0 +1,44 @@
+.analytics-container {
+    font-family: "Roboto", sans-serif;
+    padding: 20px;
+  
+    h1 {
+      color: #6d0000;
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+  
+    .error-message {
+      color: red;
+      font-weight: bold;
+    }
+  
+    .chart-container {
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+  
+    .total-orders {
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f1f1f1;
+      text-align: center;
+  
+      h2 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+      }
+  
+      p {
+        font-size: 2rem;
+        color: #6d0000;
+        font-weight: bold;
+      }
+    }
+  }
+  

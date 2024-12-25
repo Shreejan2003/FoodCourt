@@ -3,14 +3,17 @@ h1 {
   align-items: center;
   font-family: "Roboto", sans-serif;
   color: #6d0000;
-  width: 400;
+  font-weight: 400;
 }
+
 body {
   margin: 50px 0 1000px 325px;
 }
+
 * {
-  font-family: "Roboto", sans-serif; /* <-- Changed font to Roboto */
+  font-family: "Roboto", sans-serif; /* Font set to Roboto */
 }
+
 .foodperiods {
   display: flex;
   flex-direction: column;
@@ -18,7 +21,8 @@ body {
 
   .breakfast,
   .lunch,
-  .snacks {
+  .snacks,
+  .dinner {
     border: 1px solid #ccc;
     padding: 15px;
     border-radius: 5px;

@@ -1,34 +1,103 @@
 .customer-info {
-    padding: 20px;
-  
-    .customer-table {
+  font-family: "Roboto", sans-serif;
+  padding: 20px;
+
+  h1 {
+      color: #6d0000;
+      font-size: 2rem;
+      margin-bottom: 20px;
+  }
+
+  .error-message {
+      color: red;
+      font-weight: bold;
+  }
+
+  .success-message {
+      color: green;
+      font-weight: bold;
+  }
+
+  .search-bar {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+
+      input {
+          flex: 1;
+          padding: 10px;
+          font-size: 16px;
+          border: 1px solid #ccc;
+          border-radius: 5px 0 0 5px;
+      }
+
+      .search-button {
+          padding: 10px 20px;
+          background-color: #6d0000;
+          color: white;
+          border: none;
+          cursor: pointer;
+          border-radius: 0 5px 5px 0;
+      }
+
+      .search-button:hover {
+          background-color: #8b0000;
+      }
+  }
+
+  .customer-table {
       width: 100%;
       border-collapse: collapse;
-  
+
       th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
+          padding: 10px;
+          text-align: left;
+          border: 1px solid #ccc;
       }
-  
+
       th {
-        background-color: #f4f4f4;
+          background-color: #f2f2f2;
       }
-    }
-  
-    .order-details {
-      margin-top: 20px;
-  
-      ul {
-        list-style: none;
-        padding: 0;
+
+      .view-button,
+      .add-points-button {
+          padding: 5px 10px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
       }
-  
-      li {
-        background: #f9f9f9;
-        margin: 5px 0;
-        padding: 10px;
-        border: 1px solid #ddd;
+
+      .view-button {
+          background-color: #007bff;
+          color: white;
       }
-    }
+
+      .add-points-button {
+          background-color: #28a745;
+          color: white;
+      }
   }
-  
+
+  .order-details {
+      margin-top: 20px;
+
+      h2 {
+          color: #6d0000;
+          font-size: 1.5rem;
+          margin-bottom: 10px;
+      }
+
+      ul {
+          list-style: none;
+          padding: 0;
+
+          li {
+              margin-bottom: 10px;
+              padding: 10px;
+              border: 1px solid #ccc;
+              border-radius: 5px;
+              background-color: #f9f9f9;
+          }
+      }
+  }
+}

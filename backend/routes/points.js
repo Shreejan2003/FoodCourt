@@ -1,14 +1,13 @@
 const express = require('express');
 const { addPoints, deductPoints } = require('../controllers/pointsController');
-const authMiddleware = require('../middlewares/authMiddleware');
-const roleMiddleware = require('../middlewares/roleMiddleware');
+const adminAuthMiddleware = require('../middlewares/adminAuthMiddleware');
 
 const router = express.Router();
 
 // Add points (Admin only)
-router.post('/add', authMiddleware, roleMiddleware(['admin']), addPoints);
+router.post('/add', adminAuthMiddleware, addPoints);
 
-// Deduct points (Admin only for refund or adjustments)
-router.post('/deduct', authMiddleware, roleMiddleware(['admin']), deductPoints);
+// Deduct points (Admin only for refunds or adjustments)
+router.post('/deduct', adminAuthMiddleware, deductPoints);
 
 module.exports = router;
