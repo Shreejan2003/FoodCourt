@@ -1,15 +1,21 @@
 const Menu = require('../models/Menu');
 
-// Get all menu items
-const getAllMenuItems = async (req, res) => {
+// Get all menu items or filter by menuType
+const getMenuItems = async (req, res) => {
     try {
-        const menuItems = await Menu.find();
-        res.status(200).json(menuItems);
+        const menuType = req.query.menuType; // Ensure menuType is extracted here
+        const filter = menuType
+            ? { menuType: { $regex: new RegExp(`^${menuType}$`, "i") } } // Case-insensitive match
+            : {};
+
+        const menuItems = await Menu.find(filter); // Fetch filtered menu items
+        res.status(200).json(menuItems); // Respond with the fetched items
     } catch (error) {
-        console.error('Error fetching menu items:', error);
-        res.status(500).json({ message: 'Error fetching menu items', error: error.message });
+        console.error("Error fetching menu items:", error.message);
+        res.status(500).json({ message: "Failed to fetch menu items" });
     }
 };
+
 
 // Add a new menu item
 const addMenuItem = async (req, res) => {
@@ -91,7 +97,7 @@ const toggleMenuItemAvailability = async (req, res) => {
 };
 
 module.exports = {
-    getAllMenuItems,
+    getMenuItems,
     addMenuItem,
     updateMenuItem,
     deleteMenuItem,

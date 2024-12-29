@@ -9,12 +9,12 @@ const FoodList = () => {
         description: "",
         price: "",
         category: "",
-        menuType: "Breakfast", // Default value
+        menuType: "Breakfast",
         availability: true,
     });
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
-    const adminToken = "admin-hardcoded-token"; // Hardcoded admin token
+    const adminToken = "admin-hardcoded-token";
 
     // Fetch food items on load
     useEffect(() => {
@@ -45,7 +45,6 @@ const FoodList = () => {
     // Handle form submission to add food
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
             const response = await api.post("/menu", formValues, {
                 headers: { Authorization: `Bearer ${adminToken}` },
@@ -70,24 +69,20 @@ const FoodList = () => {
         }
     };
 
-    // Toggle availability of a food item
-    const toggleAvailability = async (id) => {
+    // Delete food item
+    const handleDelete = async (id) => {
         try {
-            const response = await api.patch(`/menu/${id}/toggle-availability`, {}, {
+            await api.delete(`/menu/${id}`, {
                 headers: { Authorization: `Bearer ${adminToken}` },
             });
 
-            // Update the state to reflect the toggled availability
-            setFoodData((prevData) =>
-                prevData.map((item) =>
-                    item._id === id ? { ...item, availability: response.data.menuItem.availability } : item
-                )
-            );
+            // Remove item from local state
+            setFoodData(foodData.filter((item) => item._id !== id));
+            setSuccess("Food item deleted successfully!");
             setError("");
-            setSuccess("Food item availability toggled successfully!");
         } catch (error) {
-            console.error("Error toggling availability:", error.response?.data || error.message);
-            setError("Failed to toggle availability. Please try again.");
+            console.error("Error deleting food item:", error.response?.data || error.message);
+            setError("Failed to delete food item. Please try again.");
             setSuccess("");
         }
     };
@@ -96,7 +91,6 @@ const FoodList = () => {
         <div className="food-form-container">
             <h1>Food Management</h1>
 
-            {/* Display error or success messages */}
             {error && <p className="error-message">{error}</p>}
             {success && <p className="success-message">{success}</p>}
 
@@ -173,7 +167,6 @@ const FoodList = () => {
                         <th>Price</th>
                         <th>Category</th>
                         <th>Menu Type</th>
-                        <th>Availability</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -185,13 +178,12 @@ const FoodList = () => {
                             <td>{food.price}</td>
                             <td>{food.category}</td>
                             <td>{food.menuType}</td>
-                            <td>{food.availability ? "Available" : "Unavailable"}</td>
                             <td>
                                 <button
-                                    className="toggle-button"
-                                    onClick={() => toggleAvailability(food._id)}
+                                    className="delete-button"
+                                    onClick={() => handleDelete(food._id)}
                                 >
-                                    Toggle Availability
+                                    Delete
                                 </button>
                             </td>
                         </tr>

@@ -14,7 +14,7 @@ function CustomerInfo() {
 
     const adminToken = "admin-hardcoded-token"; // Hardcoded admin token
 
-    // Fetch all customers from backend
+    // Fetch all customers
     const fetchCustomers = async () => {
         try {
             const response = await api.get("/users", {
@@ -29,7 +29,7 @@ function CustomerInfo() {
         }
     };
 
-    // Fetch order details for a selected customer
+    // Fetch order details for a specific user
     const fetchOrderDetails = async (userId) => {
         try {
             const response = await api.get(`/orders/${userId}`, {
@@ -43,7 +43,7 @@ function CustomerInfo() {
         }
     };
 
-    // Add points to a customer
+    // Add points to a user
     const addPoints = async (userId) => {
         if (!pointsToAdd || pointsToAdd <= 0) {
             setError("Please enter a valid number of points to add.");
@@ -52,23 +52,24 @@ function CustomerInfo() {
 
         try {
             const response = await api.post(
-                `/users/${userId}/add-points`,
-                { points: Number(pointsToAdd) },
+                `/users/add-points`,
+                { userId, points: Number(pointsToAdd) }, // Pass userId and points
                 {
-                    headers: { Authorization: `Bearer ${adminToken}` },
+                    headers: { Authorization: `Bearer ${adminToken}` }, // Include admin token
                 }
             );
             setSuccess(response.data.message || "Points added successfully!");
             setError("");
-            setPointsToAdd(""); // Reset points input
-            fetchCustomers(); // Refresh customer list
+            setPointsToAdd(""); // Reset input
+            fetchCustomers(); // Refresh customers
         } catch (error) {
             console.error("Error adding points:", error.message);
             setError("Failed to add points. Please try again.");
+            setSuccess("");
         }
     };
 
-    // Search customers by name
+    // Search functionality
     const handleSearch = () => {
         const term = searchTerm.toLowerCase();
         setFilteredCustomers(
@@ -84,7 +85,7 @@ function CustomerInfo() {
         setOrderDetails([]);
     };
 
-    // Fetch customers on component mount
+    // Fetch customers on load
     useEffect(() => {
         fetchCustomers();
     }, []);

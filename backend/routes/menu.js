@@ -1,6 +1,6 @@
 const express = require("express");
 const {
-    getAllMenuItems,
+    getMenuItems,
     addMenuItem,
     updateMenuItem,
     deleteMenuItem,
@@ -11,7 +11,7 @@ const adminAuthMiddleware = require("../middlewares/adminAuthMiddleware");
 const router = express.Router();
 
 // Public routes
-router.get("/", getAllMenuItems); // Public: Get all menu items
+router.get("/", getMenuItems); // Public: Get all menu items
 
 // Admin-only routes
 router.post("/", adminAuthMiddleware, addMenuItem); // Admin: Add a new menu item

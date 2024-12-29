@@ -34,39 +34,41 @@ const registerUser = async (req, res) => {
 
 // Login a user
 const loginUser = async (req, res) => {
+    const { email, password } = req.body;
+  
+    console.log("Login request body:", req.body); // Log the incoming request
+  
     try {
-        const { email, password } = req.body;
-
-        // Validate input
-        if (!email || !password) {
-            return res.status(400).json({ message: 'Email and password are required.' });
-        }
-
-        // Find user by email
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({ message: 'Invalid email or password.' });
-        }
-
-        // Validate password
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Invalid email or password.' });
-        }
-
-        // Generate token
-        const token = jwt.sign(
-            { id: user._id },
-            process.env.JWT_SECRET,
-            { expiresIn: '1h' }
-        );
-
-        res.status(200).json({ message: 'Login successful.', token });
+      // Check if the user exists
+      const user = await User.findOne({ email });
+      console.log("User found:", user); // Log the user from the database
+  
+      if (!user) {
+        return res.status(401).json({ message: "Invalid email or password." });
+      }
+  
+      // Validate the password
+      const isMatch = await bcrypt.compare(password, user.password);
+      console.log("Password match result:", isMatch); // Log the result of password validation
+  
+      if (!isMatch) {
+        return res.status(401).json({ message: "Invalid email or password." });
+      }
+  
+      // Generate JWT
+      const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {
+        expiresIn: "1d",
+      });
+  
+      console.log("Generated Token:", token); // Log the generated token
+  
+      res.status(200).json({ token, user: { id: user._id, email: user.email, username: user.username } });
     } catch (error) {
-        console.error('Error logging in user:', error);
-        res.status(500).json({ message: 'Error logging in.', error: error.message });
+      console.error("Error during login:", error.message);
+      res.status(500).json({ message: "Server error during login." });
     }
-};
+  };
+  
 
 // Get all users
 const getAllUsers = async (req, res) => {
@@ -79,8 +81,23 @@ const getAllUsers = async (req, res) => {
     }
 };
 
+// Controller for fetching logged-in user's info
+const getUserInfo = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('-password'); // Exclude password
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        console.error('Error fetching user info:', error.message);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
 module.exports = {
     registerUser,
     loginUser,
     getAllUsers,
+    getUserInfo,
 };

@@ -4,63 +4,75 @@ const Menu = require('../models/Menu');
 
 // Place an order with points
 const placeOrder = async (req, res) => {
-    const { items } = req.body;
-    const userId = req.user.id; // Authenticated user's ID
+  const { items } = req.body; // Extract items from the request body
+  const userId = req.user.id; // Extract user ID from the authenticated request
 
-    // Validate input
-    if (!items || !Array.isArray(items) || items.length === 0) {
-        return res.status(400).json({ message: 'Order items are required and must be an array.' });
+  console.log("Received order request:", { userId, items });
+
+  // Validate the request payload
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ message: "Order items are required and must be an array." });
+  }
+
+  try {
+    // Find the user making the order
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
     }
 
-    try {
-        // Validate and fetch user
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found.' });
-        }
+    // Fetch menu items from the database
+    const menuItemIds = items.map((item) => item.menuItemId);
+    console.log("Fetching menu items for IDs:", menuItemIds);
 
-        // Fetch menu items and validate against the request
-        const menuItemIds = items.map(item => item.menuItemId);
-        const menuItems = await Menu.find({ _id: { $in: menuItemIds } });
+    const menuItems = await Menu.find({ _id: { $in: menuItemIds } });
+    console.log("Fetched Menu Items:", menuItems);
 
-        if (menuItems.length !== items.length) {
-            return res.status(400).json({ message: 'Some menu items are invalid or unavailable.' });
-        }
-
-        // Calculate total price
-        const totalPrice = items.reduce((acc, item) => {
-            const menuItem = menuItems.find(menu => menu.id === item.menuItemId);
-            if (!menuItem) {
-                throw new Error(`Menu item with ID ${item.menuItemId} not found.`);
-            }
-            return acc + menuItem.price * item.quantity;
-        }, 0);
-
-        // Check if user has sufficient points
-        if (user.points < totalPrice) {
-            return res.status(400).json({ message: 'Insufficient points to place the order.' });
-        }
-
-        // Deduct points and save user
-        user.points -= totalPrice;
-        await user.save();
-
-        // Create order
-        const order = new Order({
-            userId,
-            items,
-            totalPrice,
-            paymentMethod: 'points',
-            pointsUsed: totalPrice,
-        });
-        await order.save();
-
-        res.status(201).json({ message: 'Order placed successfully.', order });
-    } catch (error) {
-        console.error(`Error placing order for userId ${userId}:`, error.message);
-        res.status(500).json({ message: 'Error placing order.', error: error.message });
+    // Check if all menu items exist
+    if (menuItems.length !== items.length) {
+      return res.status(400).json({ message: "Some menu items are invalid or unavailable." });
     }
+
+    // Calculate the total price of the order
+    const totalPrice = items.reduce((acc, item) => {
+      const menuItem = menuItems.find((menu) => menu._id.toString() === item.menuItemId);
+      if (!menuItem) {
+        throw new Error(`Menu item with ID ${item.menuItemId} not found.`);
+      }
+      return acc + menuItem.price * item.quantity;
+    }, 0);
+
+    console.log("Total price calculated:", totalPrice);
+
+    // Check if the user has enough points
+    if (user.points < totalPrice) {
+      return res.status(400).json({ message: "Insufficient points to place the order." });
+    }
+
+    // Deduct points from the user's account
+    user.points -= totalPrice;
+    await user.save();
+
+    // Create and save the order in the database
+    const order = new Order({
+      userId,
+      items,
+      totalPrice,
+      paymentMethod: "points",
+      pointsUsed: totalPrice,
+    });
+    await order.save();
+
+    console.log("Order placed successfully:", order);
+
+    // Return the response
+    res.status(201).json({ message: "Order placed successfully.", order });
+  } catch (error) {
+    console.error("Error placing order:", error.message);
+    res.status(500).json({ message: "Error placing order.", error: error.message });
+  }
 };
+
 
 // Get user order history
 const getUserOrderHistory = async (req, res) => {

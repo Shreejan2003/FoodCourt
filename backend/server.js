@@ -4,7 +4,11 @@ const cors = require('cors');
 const connectDB = require('./config');
 const errorHandler = require('./middlewares/errorHandler');
 const morgan = require('morgan');
-
+const corsOptions = {
+    origin: '*', // Update with specific origins for production
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  };
 // Load environment variables
 dotenv.config();
 
@@ -13,6 +17,7 @@ const app = express();
 
 // Middleware
 app.use(cors()); // Enable Cross-Origin Resource Sharing
+app.use(cors(corsOptions));
 app.use(express.json()); // Parse JSON requests
 app.use(morgan('dev')); // Log HTTP requests
 

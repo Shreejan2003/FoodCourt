@@ -10,9 +10,6 @@ router.post('/login', adminAuthMiddleware, (req, res) => {
 });
 
 // Admin-only route to add points
-router.post('/add-points', (req, res, next) => {
-    console.log('Add Points Route Hit');
-    next();
-}, adminAuthMiddleware, addPoints);
+router.post('/add-points', adminAuthMiddleware, addPoints); // Use "/add-points" here
 
 module.exports = router;

@@ -6,7 +6,7 @@ const validateOrderRequest = require('../middlewares/orderValidation');
 const router = express.Router();
 
 // Place an order
-router.post('/', authMiddleware, validateOrderRequest, placeOrder);
+router.post('/place', authMiddleware, validateOrderRequest, placeOrder); // Add '/place'
 
 // Get order history
 router.get('/history', authMiddleware, getUserOrderHistory);

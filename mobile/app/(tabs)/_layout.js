@@ -1,25 +1,11 @@
-import React, { useEffect } from "react";
 import { Tabs } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import React from "react";
 
-const TabsLayout = () => {
-  const router = useRouter();
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const token = await AsyncStorage.getItem("token");
-      if (!token) {
-        router.push("/login"); // Redirect to login if not authenticated
-      }
-    };
-    checkAuth();
-  }, []);
-
+const _layout = () => {
   return (
     <Tabs>
       <Tabs.Screen
@@ -78,8 +64,26 @@ const TabsLayout = () => {
           ),
         }}
       />
+      <Tabs.Screen
+        name="breakfast"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="lunch"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="snacks"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 };
 
-export default TabsLayout;
+export default _layout;

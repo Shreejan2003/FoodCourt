@@ -17,20 +17,25 @@ const Login = () => {
       Alert.alert("Error", "Email and password are required!");
       return;
     }
-
+  
     try {
       const response = await loginUser({ email, password });
-      const token = response.data.token;
-
+      const token = response.token || response.data?.token; // Check both places
+  
+      if (!token) {
+        throw new Error("Token not found in response.");
+      }
+  
       await setAuthToken(token); // Save token and set it in headers
       Alert.alert("Success", "Login successful!");
       router.push("/(tabs)"); // Navigate to the main app
     } catch (error) {
+      console.error("Login Error:", error.message || error.response?.data);
       const errorMessage = error.response?.data?.message || "Login failed!";
       Alert.alert("Error", errorMessage);
     }
   };
-
+  
   return (
     <View style={{ flex: 1, backgroundColor: "#E0E0E0E0" }}>
       <View
