@@ -1,7 +1,7 @@
 const express = require('express');
 const {
     getPopularMenuItems,
-    getTotalOrders,
+    getTotalOrdersOfDay,
     getMenuStatus,
 } = require('../controllers/orderController');
 const adminAuthMiddleware = require('../middlewares/adminAuthMiddleware');
@@ -9,8 +9,8 @@ const adminAuthMiddleware = require('../middlewares/adminAuthMiddleware');
 const router = express.Router();
 
 // Analytics routes (Admin only)
-router.get('/popular-menu-items', adminAuthMiddleware, getPopularMenuItems);
-router.get('/total-orders', adminAuthMiddleware, getTotalOrders);
-router.get('/menu-status', adminAuthMiddleware, getMenuStatus);
+router.get('/analytics/popular-menu-items', adminAuthMiddleware, getPopularMenuItems);
+router.get('/analytics/total-orders-day', adminAuthMiddleware, getTotalOrdersOfDay);
+router.get('/analytics/menu-status', adminAuthMiddleware, getMenuStatus);
 
 module.exports = router;

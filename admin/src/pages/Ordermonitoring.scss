@@ -1,101 +1,155 @@
 .order-monitoring {
-  font-family: Roboto, sans-serif;
+  padding: 30px;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 
   h1 {
+    text-align: center;
     margin-bottom: 20px;
-    color: #333;
+    color: #6d0000; // Updated for the red title color
   }
 
-  .orders-table {
-    border-collapse: separate;
-    border-spacing: 0px 10px;
-
+  table {
     width: 100%;
-    // border-spacing: 15px;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
 
-    border-collapse: separate;
-    .Head {
-      background-color: #ffffff;
-      box-shadow: none;
-    }
-    th {
-      color: #6d0000;
-      padding: 10px;
-      text-align: left;
-      font-size: 16px;
-    }
-
-    tr {
-      margin-top: 10px;
-      background-color: #f9f9f9;
-      border-radius: 10px;
-      padding: 10px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
+    th,
     td {
-      padding: 10px;
+      padding: 15px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #6d0000; // Red for headers
+      color: white;
+      font-weight: bold;
+    }
+
+    tbody tr:nth-child(odd) {
+      background-color: #f7f7f7;
+    }
+
+    tbody tr:hover {
+      background-color: #e0f7fa;
     }
 
     button {
-      padding: 5px 10px;
-      margin-right: 5px;
+      padding: 10px 15px;
       border: none;
       border-radius: 5px;
+      font-size: 14px;
       cursor: pointer;
-      background-color: #007bff;
-      color: white;
 
-      &:hover {
-        background-color: #0056b3;
+      &.view-btn {
+        background-color: #6d0000; // Red for view button
+        color: white;
+        margin-right: 10px;
+        transition: background-color 0.3s;
+
+        &:hover {
+          background-color: #9b2e03;
+        }
+      }
+
+      &.received-btn {
+        background-color: #28a745;
+        color: white;
+        transition: background-color 0.3s;
+
+        &:hover {
+          background-color: #218838;
+        }
       }
     }
   }
 
   .order-details {
-    margin-top: 30px;
+    background: white;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
 
     h2 {
-      margin-bottom: 15px;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #6d0000; // Updated for red title color
     }
 
-    table {
-      width: 100%;
-      border-spacing: 15px;
+    p {
+      margin: 10px 0;
+      font-size: 16px;
+      color: #555;
+    }
 
-      //   th,
-      //   td {
-      //     padding: 10px;
-      //     text-align: left;
-      //   }
+    .order-items-table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th,
+      td {
+        padding: 10px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+      }
 
       th {
+        background-color: #6d0000; // Red for headers
+        color: white;
+        font-weight: bold;
+      }
+
+      tbody tr:hover {
         background-color: #f1f1f1;
       }
+    }
 
-      td {
-        background-color: #f9f9f9;
+    .order-actions {
+      margin-top: 20px;
+      text-align: center;
+
+      button {
+        margin: 0 10px;
+        padding: 10px 20px;
+        border: none;
         border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-    }
+        font-size: 16px;
+        cursor: pointer;
 
-    .total {
-      margin-top: 15px;
-      font-size: 18px;
-      color: #333;
-    }
+        &.call-btn {
+          background-color: #007bff; // Blue for Notify User button
+          color: white;
 
-    button {
-      margin-top: 10px;
-      padding: 8px 12px;
-      border: none;
-      border-radius: 5px;
-      background-color: #28a745;
-      color: white;
-      cursor: pointer;
+          &:hover {
+            background-color: #0056b3;
+          }
+        }
 
-      &:hover {
-        background-color: #218838;
+        &.received-btn {
+          background-color: #28a745; // Green for Mark as Received button
+          color: white;
+
+          &:hover {
+            background-color: #218838;
+          }
+        }
+
+        &.close-btn {
+          background-color: #6d0000; // Red for Close button
+          color: white;
+
+          &:hover {
+            background-color: #9b2e03;
+          }
+        }
       }
     }
   }

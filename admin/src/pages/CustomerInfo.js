@@ -5,9 +5,7 @@ import "./CustomerInfo.scss";
 function CustomerInfo() {
     const [customers, setCustomers] = useState([]);
     const [filteredCustomers, setFilteredCustomers] = useState([]);
-    const [selectedCustomer, setSelectedCustomer] = useState(null);
-    const [userStatement, setUserStatement] = useState([]);
-    const [pointsToAdd, setPointsToAdd] = useState("");
+    const [pointsToAddMap, setPointsToAddMap] = useState({}); // Object to store points for each user
     const [searchTerm, setSearchTerm] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
@@ -29,23 +27,10 @@ function CustomerInfo() {
         }
     };
 
-    // Fetch user statement for a specific user
-    const fetchUserStatement = async (userId) => {
-        try {
-            const response = await api.get(`/orders/${userId}`, {
-                headers: { Authorization: `Bearer ${adminToken}` },
-            });
-            setUserStatement(response.data.data);
-            setError("");
-        } catch (error) {
-            console.error("Error fetching user statement:", error.message);
-            setError("Failed to fetch user statement.");
-        }
-    };
-
     // Add points to a user
     const addPoints = async (userId) => {
-        if (!pointsToAdd || pointsToAdd <= 0) {
+        const points = pointsToAddMap[userId];
+        if (!points || points <= 0) {
             setError("Please enter a valid number of points to add.");
             return;
         }
@@ -53,14 +38,14 @@ function CustomerInfo() {
         try {
             const response = await api.post(
                 `/users/add-points`,
-                { userId, points: Number(pointsToAdd) },
+                { userId, points: Number(points) },
                 {
                     headers: { Authorization: `Bearer ${adminToken}` },
                 }
             );
             setSuccess(response.data.message || "Points added successfully!");
             setError("");
-            setPointsToAdd(""); // Reset input
+            setPointsToAddMap((prev) => ({ ...prev, [userId]: "" })); // Reset input for the user
             fetchCustomers(); // Refresh customers
         } catch (error) {
             console.error("Error adding points:", error.message);
@@ -79,10 +64,9 @@ function CustomerInfo() {
         );
     };
 
-    // Deselect customer
-    const handleDeselectCustomer = () => {
-        setSelectedCustomer(null);
-        setUserStatement([]);
+    // Handle input change for points
+    const handlePointsChange = (userId, value) => {
+        setPointsToAddMap((prev) => ({ ...prev, [userId]: value }));
     };
 
     // Fetch customers on load
@@ -130,20 +114,13 @@ function CustomerInfo() {
                             <td>{customer.points}</td>
                             <td>{new Date(customer.createdAt).toLocaleDateString()}</td>
                             <td>
-                                <button
-                                    onClick={() => {
-                                        setSelectedCustomer(customer);
-                                        fetchUserStatement(customer._id);
-                                    }}
-                                    className="view-button"
-                                >
-                                    User Statement
-                                </button>
                                 <input
                                     type="number"
                                     placeholder="Add Points"
-                                    value={pointsToAdd}
-                                    onChange={(e) => setPointsToAdd(e.target.value)}
+                                    value={pointsToAddMap[customer._id] || ""}
+                                    onChange={(e) =>
+                                        handlePointsChange(customer._id, e.target.value)
+                                    }
                                 />
                                 <button
                                     onClick={() => addPoints(customer._id)}
@@ -156,33 +133,6 @@ function CustomerInfo() {
                     ))}
                 </tbody>
             </table>
-
-            {/* User Statement */}
-            {selectedCustomer && (
-                <div className="user-statement">
-                    <div className="statement-header">
-                        <h2>User Statement for {selectedCustomer.username}</h2>
-                        <button
-                            onClick={handleDeselectCustomer}
-                            className="deselect-button"
-                        >
-                            Deselect
-                        </button>
-                    </div>
-                    <ul>
-                        {userStatement.map((order) => (
-                            <li key={order._id}>
-                                <p>Order ID: {order._id}</p>
-                                <p>Total Price: ${order.totalPrice}</p>
-                                <p>
-                                    Ordered At:{" "}
-                                    {new Date(order.createdAt).toLocaleDateString()}
-                                </p>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            )}
         </div>
     );
 }

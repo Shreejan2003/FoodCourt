@@ -4,13 +4,18 @@ const {
     getUserNotifications,
     markAsRead,
 } = require('../controllers/notificationController');
+
+// Import `authMiddleware` and `adminAuthMiddleware`
 const authMiddleware = require('../middlewares/authMiddleware');
+const adminAuthMiddleware = require('../middlewares/adminAuthMiddleware');
 
 const router = express.Router();
 
-// Authenticated routes for notifications
-router.post('/', authMiddleware, sendNotification); // Authenticated: Send a notification
-router.get('/', authMiddleware, getUserNotifications); // Authenticated: Get notifications for the authenticated user
-router.patch('/:id', authMiddleware, markAsRead); // Authenticated: Mark a notification as read
+// Admin route to send a notification
+router.post('/', adminAuthMiddleware, sendNotification);
+
+// User routes
+router.get('/', authMiddleware, getUserNotifications); // Use `authMiddleware` here
+router.patch('/:id', authMiddleware, markAsRead); // Use `authMiddleware` here
 
 module.exports = router;

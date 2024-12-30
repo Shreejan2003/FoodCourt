@@ -7,41 +7,50 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Food_Container from "../../components/Food_Container";
 import { getMenuItems } from "../api";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
 const Menu = () => {
   const [visibleView, setVisibleView] = useState("breakfast");
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] =useState(null);
   const [plateItems, setPlateItems] = useState([]); // To store selected items
 
   const navigation = useNavigation();
 
+  const fetchMenu = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const items = await getMenuItems(visibleView);
+      setMenuItems(items);
+    } catch (err) {
+      console.error("Error fetching menu items:", err.message);
+      setError("Failed to fetch menu items. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchMenu = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const items = await getMenuItems(visibleView);
-        setMenuItems(items);
-      } catch (err) {
-        console.error("Error fetching menu items:", err.message);
-        setError("Failed to fetch menu items. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMenu();
+    fetchMenu(); // Fetch menu items when the view changes
   }, [visibleView]);
+
+  // Refresh Menu and Reset Plate when returning from Plate screen
+  useFocusEffect(
+    useCallback(() => {
+      console.log("Menu refreshed and plate cleared after navigation.");
+      fetchMenu(); // Re-fetch menu items when returning to this screen
+      setPlateItems([]); // Clear the plate items
+    }, [])
+  );
 
   const handleAddToPlate = (item) => {
     // Check if item is already in plate
@@ -51,7 +60,6 @@ const Menu = () => {
     } else {
       setPlateItems((prev) => [...prev, item]);
       Alert.alert("Added to Plate", `${item.name} has been added to your plate.`);
-      console.log("Plate Items:", plateItems); // Debugging log
     }
   };
 
@@ -61,7 +69,6 @@ const Menu = () => {
       return;
     }
 
-    console.log("Navigating to Plate with items:", plateItems); // Debugging log
     navigation.navigate("plate", { plateItems }); // Pass plateItems via navigation
   };
 

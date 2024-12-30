@@ -1,39 +1,26 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useRoute, useNavigation } from "@react-navigation/native";
 
 const Plate = () => {
   const route = useRoute();
-  const navigation = useNavigation(); // For navigation back to Menu after placing an order
-  const { plateItems = [] } = route.params || {};
+  const navigation = useNavigation();
+  const { plateItems = [] } = route.params || {}; // Ensure plateItems is passed correctly
   const [orderItems, setOrderItems] = useState(
     plateItems.map((item) => ({ ...item, quantity: 1 }))
   );
   const [loading, setLoading] = useState(false);
-  const [userPoints, setUserPoints] = useState(0);
 
-  // Fetch user points when the component mounts
-  useEffect(() => {
-    const fetchUserPoints = async () => {
-      try {
-        const token = await AsyncStorage.getItem("token");
-        if (!token) throw new Error("Unauthorized: Token is missing");
-
-        const response = await axios.get("http://192.168.1.7:5000/api/users/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUserPoints(response.data.points); // Set user's available points
-        console.log("User points fetched:", response.data.points);
-      } catch (error) {
-        console.error("Error fetching user points:", error.message);
-        Alert.alert("Error", "Failed to fetch user points.");
-      }
-    };
-
-    fetchUserPoints();
-  }, []);
+  console.log("Plate Screen Items:", plateItems); // Debugging log
 
   const handleIncrease = (id) => {
     setOrderItems((prevItems) =>
@@ -61,19 +48,13 @@ const Plate = () => {
     try {
       const totalPoints = calculateTotal();
 
-      // Check if user has sufficient points
-      if (totalPoints > userPoints) {
-        Alert.alert(
-          "Insufficient Points",
-          `You need ${totalPoints - userPoints} more points to place this order.`
-        );
-        return;
-      }
-
       setLoading(true);
 
-      const token = await AsyncStorage.getItem("token");
-      if (!token) throw new Error("Unauthorized: Token is missing");
+      const token = await AsyncStorage.getItem("token"); // Retrieve token
+      console.log("Token being sent:", token); // Debugging token
+      if (!token) {
+        throw new Error("Unauthorized: Token is missing");
+      }
 
       // Construct payload
       const payload = {
@@ -83,9 +64,9 @@ const Plate = () => {
         })),
       };
 
-      console.log("Placing order with payload:", payload);
+      console.log("Payload:", payload); // Debugging payload
 
-      // API call to place the order
+      // Make API call to place order
       const response = await axios.post(
         "http://192.168.1.7:5000/api/orders/place",
         payload,
@@ -97,28 +78,36 @@ const Plate = () => {
         }
       );
 
-      console.log("Order Response:", response.data);
+      console.log("Order Response:", response.data); // Debugging success response
       Alert.alert("Order Placed", "Your order has been placed successfully!");
-
-      // Navigate back to Menu and reset state
-      setOrderItems([]); // Reset order items
-      navigation.navigate("menu");
+      navigation.goBack(); // Navigate back after placing the order
     } catch (error) {
-      console.error("Error placing order:", error.response?.data || error.message);
-      Alert.alert(
-        "Error",
-        error.response?.data?.message || "Failed to place the order. Please try again."
-      );
+      if (error.response) {
+        console.error("Error Response:", error.response.data);
+        Alert.alert(
+          "Error",
+          error.response.data.message || "Failed to place the order."
+        );
+      } else {
+        console.error("Error:", error.message);
+        Alert.alert(
+          "Error",
+          error.message || "An unknown error occurred. Please try again."
+        );
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  if (!orderItems || orderItems.length === 0) {
+  if (!plateItems || plateItems.length === 0) {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>Your plate is empty!</Text>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
           <Text style={styles.backButtonText}>Back to Menu</Text>
         </TouchableOpacity>
       </View>
@@ -127,7 +116,6 @@ const Plate = () => {
 
   return (
     <View style={styles.mainContainer}>
-      {loading && <ActivityIndicator size="large" color="#800000" />}
       <FlatList
         data={orderItems}
         keyExtractor={(item) => item._id}
@@ -155,7 +143,6 @@ const Plate = () => {
       />
       <View style={styles.totalContainer}>
         <Text style={styles.totalText}>Total: {calculateTotal()} pts</Text>
-        <Text style={styles.totalText}>Available Points: {userPoints} pts</Text>
         <TouchableOpacity
           style={styles.placeOrderButton}
           onPress={handlePlaceOrder}

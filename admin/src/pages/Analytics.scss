@@ -1,44 +1,41 @@
-.analytics-container {
-    font-family: "Roboto", sans-serif;
-    padding: 20px;
-  
-    h1 {
-      color: #6d0000;
-      font-size: 2rem;
-      margin-bottom: 20px;
-    }
-  
-    .error-message {
-      color: red;
-      font-weight: bold;
-    }
-  
-    .chart-container {
-      margin-top: 20px;
+.analytics-page {
+  padding: 30px;
+  font-family: Arial, sans-serif;
+
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #6d0000;
+  }
+
+  .error-message {
+    color: #dc3545;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+
+  .charts-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+
+    .chart {
+      flex: 1 1 45%;
+      min-width: 300px;
+      max-width: 500px;
       padding: 20px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      background-color: #f9f9f9;
-    }
-  
-    .total-orders {
-      margin-top: 20px;
-      padding: 20px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      background-color: #f1f1f1;
-      text-align: center;
-  
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
       h2 {
-        font-size: 1.5rem;
-        margin-bottom: 10px;
-      }
-  
-      p {
-        font-size: 2rem;
+        text-align: center;
         color: #6d0000;
-        font-weight: bold;
+        margin-bottom: 10px;
       }
     }
   }
-  
+}

@@ -21,14 +21,23 @@ const getPopularMenuItems = async (req, res) => {
     }
 };
 
-// Get total orders count
-const getTotalOrders = async (req, res) => {
+// Get total orders count of the day
+const getTotalOrdersOfDay = async (req, res) => {
     try {
-        const totalOrders = await Order.countDocuments();
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const totalOrders = await Order.countDocuments({
+            createdAt: { $gte: startOfDay, $lte: endOfDay },
+        });
+
         res.status(200).json({ success: true, totalOrders });
     } catch (error) {
-        console.error('Error fetching total orders:', error.message);
-        res.status(500).json({ message: 'Error fetching total orders.', error: error.message });
+        console.error('Error fetching total orders of the day:', error.message);
+        res.status(500).json({ message: 'Error fetching total orders of the day.', error: error.message });
     }
 };
 
@@ -47,6 +56,6 @@ const getMenuStatus = async (req, res) => {
 
 module.exports = {
     getPopularMenuItems,
-    getTotalOrders,
+    getTotalOrdersOfDay,
     getMenuStatus,
 };

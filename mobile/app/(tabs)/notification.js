@@ -1,39 +1,55 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, ActivityIndicator, Alert, StyleSheet } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
-import NotifyBox from "../../components/NotifyBox";
+import React, { useState, useCallback } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
+import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
+import { getNotifications } from "../api"; // Import API function
+import NotifyBox from "../../components/NotifyBox"; // A UI container for notifications
 
 const Notification = () => {
-  const [notifications, setNotifications] = useState([]); // Store notifications
-  const [loading, setLoading] = useState(true); // Loading state
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const token = await AsyncStorage.getItem("token");
-        if (!token) throw new Error("Unauthorized: Token is missing");
+  const fetchNotifications = async () => {
+    setLoading(true);
+    setError(null);
 
-        const response = await axios.get("http://192.168.1.7:5000/api/notifications", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+    try {
+      const data = await getNotifications(); // Call API
+      console.log("Notifications fetched:", data); // Debugging log
+      setNotifications(data);
+    } catch (err) {
+      console.error("Error fetching notifications:", err);
+      setError("Failed to load notifications. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        setNotifications(response.data.notifications || []); // Set notifications
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching notifications:", error.message);
-        Alert.alert("Error", "Failed to load notifications. Please try again.");
-        setLoading(false);
-      }
-    };
-
-    fetchNotifications();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchNotifications(); // Fetch notifications every time the screen is focused
+    }, [])
+  );
 
   if (loading) {
     return (
-      <View style={styles.loaderContainer}>
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#800000" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
       </View>
     );
   }
@@ -41,16 +57,21 @@ const Notification = () => {
   if (notifications.length === 0) {
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>No notifications available.</Text>
+        <Text style={styles.emptyText}>No notifications found.</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.ScrollContainer}>
+    <ScrollView style={styles.scrollContainer}>
       <View style={styles.mainContainer}>
-        {notifications.map((notification, index) => (
-          <NotifyBox key={index} inbox={notification.message} date={notification.createdAt} />
+        {notifications.map((notification) => (
+          <NotifyBox
+            key={notification._id}
+            message={notification.message}
+            date={new Date(notification.createdAt).toLocaleString()}
+            read={notification.read}
+          />
         ))}
       </View>
     </ScrollView>
@@ -60,9 +81,26 @@ const Notification = () => {
 export default Notification;
 
 const styles = StyleSheet.create({
-  ScrollContainer: { flex: 1, padding: 10, backgroundColor: "#F9F9F9" },
-  mainContainer: { flex: 1, padding: 10, gap: 15 },
-  loaderContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  emptyText: { fontSize: 16, color: "#555", fontWeight: "bold" },
+  scrollContainer: { flex: 1, padding: 10 },
+  mainContainer: { flex: 1, gap: 10 },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: { color: "red", fontSize: 16 },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyText: {
+    color: "#555",
+    fontSize: 16,
+  },
 });

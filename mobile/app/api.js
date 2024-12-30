@@ -19,17 +19,6 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
-// Fetch user info
-export const getUserInfo = async () => {
-  try {
-    const response = await api.get("/users/me");
-    return response.data; // Ensure this matches your backend API response
-  } catch (error) {
-    console.error("Error fetching user info:", error.message);
-    throw error;
-  }
-};
-
 // Handle unauthorized errors globally
 api.interceptors.response.use(
   (response) => response,
@@ -41,56 +30,6 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-export const registerUser = async (userData) => {
-  try {
-    console.log("Registering user with data:", userData); // Debug log
-    const response = await api.post("/auth/register", userData); // Ensure endpoint is correct
-    return response.data;
-  } catch (error) {
-    // Improved error handling
-    console.error("Error registering user:", error.response?.data || error.message || error);
-    const errorMessage =
-      error.response?.data?.message || error.message || "Unknown error occurred during signup.";
-    throw new Error(errorMessage); // Throw the error with a descriptive message
-  }
-};
-
-// Login user
-export const loginUser = async (userData) => {
-  try {
-    console.log("Logging in user with data:", userData); // Debug log
-    const response = await api.post("/auth/login", userData);
-    return response.data;
-  } catch (error) {
-    console.error("Error logging in user:", error.response?.data || error.message);
-    throw error.response?.data || error.message;
-  }
-};
-
-// Place an order
-export const placeOrder = async (orderData) => {
-  try {
-    console.log("Placing order with data:", orderData); // Debug log
-    const response = await api.post("/orders/place", orderData);
-    return response.data;
-  } catch (error) {
-    console.error("Error placing order:", error.response?.data || error.message);
-    throw error.response?.data || error.message;
-  }
-};
-
-// Fetch menu items
-export const getMenuItems = async (menuType) => {
-  try {
-    console.log("Fetching menu items for type:", menuType); // Debug log
-    const response = await api.get(`/menu${menuType ? `?menuType=${menuType}` : ""}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching menu items:", error.response?.data || error.message);
-    throw error.response?.data || error.message;
-  }
-};
 
 export const setAuthToken = async (token) => {
   try {
@@ -125,6 +64,99 @@ export const logout = async () => {
     await AsyncStorage.removeItem("token");
   } catch (error) {
     console.error("Error during logout:", error);
+  }
+};
+
+// Fetch user info
+export const getUserInfo = async () => {
+  try {
+    const response = await api.get("/users/me");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user info:", error.message);
+    throw error;
+  }
+};
+
+// Register user
+export const registerUser = async (userData) => {
+  try {
+    console.log("Registering user with data:", userData);
+    const response = await api.post("/auth/register", userData);
+    return response.data;
+  } catch (error) {
+    console.error("Error registering user:", error.response?.data || error.message);
+    throw error.response?.data || error.message;
+  }
+};
+
+// Login user
+export const loginUser = async (userData) => {
+  try {
+    console.log("Logging in user with data:", userData);
+    const response = await api.post("/auth/login", userData);
+    return response.data;
+  } catch (error) {
+    console.error("Error logging in user:", error.response?.data || error.message);
+    throw error.response?.data || error.message;
+  }
+};
+
+// Place an order
+export const placeOrder = async (orderData) => {
+  try {
+    console.log("Placing order with data:", orderData);
+    const response = await api.post("/orders/place", orderData);
+    return response.data;
+  } catch (error) {
+    console.error("Error placing order:", error.response?.data || error.message);
+    throw error.response?.data || error.message;
+  }
+};
+
+// Fetch menu items
+export const getMenuItems = async (menuType) => {
+  try {
+    console.log("Fetching menu items for type:", menuType);
+    const response = await api.get(`/menu${menuType ? `?menuType=${menuType}` : ""}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching menu items:", error.response?.data || error.message);
+    throw error.response?.data || error.message;
+  }
+};
+
+// Fetch notifications for the authenticated user
+export const getNotifications = async () => {
+  try {
+    const response = await api.get("/notifications");
+    return response.data; // Ensure this matches the backend response structure
+  } catch (error) {
+    console.error("Error fetching notifications:", error.response?.data || error.message);
+    throw error.response?.data || error.message;
+  }
+};
+
+// Mark a notification as read
+export const markNotificationAsRead = async (notificationId) => {
+  try {
+    const response = await api.patch(`/notifications/${notificationId}/read`);
+    return response.data;
+  } catch (error) {
+    console.error("Error marking notification as read:", error.response?.data || error.message);
+    throw error.response?.data || error.message;
+  }
+};
+
+// Send a notification (for admin or testing purposes)
+export const sendNotification = async (notificationData) => {
+  try {
+    console.log("Sending notification with data:", notificationData);
+    const response = await api.post("/notifications", notificationData);
+    return response.data;
+  } catch (error) {
+    console.error("Error sending notification:", error.response?.data || error.message);
+    throw error.response?.data || error.message;
   }
 };
 
