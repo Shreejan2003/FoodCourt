@@ -6,7 +6,7 @@ function CustomerInfo() {
     const [customers, setCustomers] = useState([]);
     const [filteredCustomers, setFilteredCustomers] = useState([]);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
-    const [orderDetails, setOrderDetails] = useState([]);
+    const [userStatement, setUserStatement] = useState([]);
     const [pointsToAdd, setPointsToAdd] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
     const [error, setError] = useState("");
@@ -29,17 +29,17 @@ function CustomerInfo() {
         }
     };
 
-    // Fetch order details for a specific user
-    const fetchOrderDetails = async (userId) => {
+    // Fetch user statement for a specific user
+    const fetchUserStatement = async (userId) => {
         try {
             const response = await api.get(`/orders/${userId}`, {
                 headers: { Authorization: `Bearer ${adminToken}` },
             });
-            setOrderDetails(response.data.data);
+            setUserStatement(response.data.data);
             setError("");
         } catch (error) {
-            console.error("Error fetching order details:", error.message);
-            setError("Failed to fetch order details.");
+            console.error("Error fetching user statement:", error.message);
+            setError("Failed to fetch user statement.");
         }
     };
 
@@ -53,9 +53,9 @@ function CustomerInfo() {
         try {
             const response = await api.post(
                 `/users/add-points`,
-                { userId, points: Number(pointsToAdd) }, // Pass userId and points
+                { userId, points: Number(pointsToAdd) },
                 {
-                    headers: { Authorization: `Bearer ${adminToken}` }, // Include admin token
+                    headers: { Authorization: `Bearer ${adminToken}` },
                 }
             );
             setSuccess(response.data.message || "Points added successfully!");
@@ -82,7 +82,7 @@ function CustomerInfo() {
     // Deselect customer
     const handleDeselectCustomer = () => {
         setSelectedCustomer(null);
-        setOrderDetails([]);
+        setUserStatement([]);
     };
 
     // Fetch customers on load
@@ -133,11 +133,11 @@ function CustomerInfo() {
                                 <button
                                     onClick={() => {
                                         setSelectedCustomer(customer);
-                                        fetchOrderDetails(customer._id);
+                                        fetchUserStatement(customer._id);
                                     }}
                                     className="view-button"
                                 >
-                                    View Orders
+                                    User Statement
                                 </button>
                                 <input
                                     type="number"
@@ -157,17 +157,20 @@ function CustomerInfo() {
                 </tbody>
             </table>
 
-            {/* Order Details */}
+            {/* User Statement */}
             {selectedCustomer && (
-                <div className="order-details">
-                    <div className="order-header">
-                        <h2>Order Details for {selectedCustomer.username}</h2>
-                        <button onClick={handleDeselectCustomer} className="deselect-button">
+                <div className="user-statement">
+                    <div className="statement-header">
+                        <h2>User Statement for {selectedCustomer.username}</h2>
+                        <button
+                            onClick={handleDeselectCustomer}
+                            className="deselect-button"
+                        >
                             Deselect
                         </button>
                     </div>
                     <ul>
-                        {orderDetails.map((order) => (
+                        {userStatement.map((order) => (
                             <li key={order._id}>
                                 <p>Order ID: {order._id}</p>
                                 <p>Total Price: ${order.totalPrice}</p>

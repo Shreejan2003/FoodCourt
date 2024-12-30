@@ -1,39 +1,53 @@
 const User = require('../models/User');
+const Joi = require('joi');
 
 // Admin adds points to a user's account
 const addPoints = async (req, res) => {
-    const { userId, points } = req.body;
+    // Define schema for input validation
+    const schema = Joi.object({
+        userId: Joi.string().required().messages({
+            'string.empty': 'User ID is required.',
+            'any.required': 'User ID is required.',
+        }),
+        points: Joi.number().positive().required().messages({
+            'number.positive': 'Points must be a positive number.',
+            'any.required': 'Points are required.',
+        }),
+    });
 
-    // Validate input
-    if (!userId || !points || typeof points !== 'number' || points <= 0) {
-        return res.status(400).json({ message: 'Invalid input. Please provide a valid userId and positive points value.' });
+    // Validate request body against schema
+    const { error, value } = schema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ message: error.details[0].message });
     }
 
-    try {
-        // Log the request body
-        console.log('Request Body:', req.body);
+    const { userId, points } = value;
 
+    try {
         // Find user by ID
         const user = await User.findById(userId);
         if (!user) {
-            console.log(`User with ID ${userId} not found`);
+            console.warn(`User with ID ${userId} not found`);
             return res.status(404).json({ message: `User with ID ${userId} not found` });
         }
-
-        // Log user details before update
-        console.log('User Before Update:', user);
 
         // Update user's points
         user.points += points;
         await user.save();
 
-        // Log user details after update
-        console.log('User After Update:', user);
+        console.info(`Points added successfully to user ${userId}. New points: ${user.points}`);
 
-        res.status(200).json({ message: 'Points added successfully', user });
+        res.status(200).json({
+            message: 'Points added successfully',
+            user: {
+                id: user._id,
+                username: user.username,
+                points: user.points,
+            },
+        });
     } catch (error) {
         console.error(`Error adding points for userId ${userId}:`, error);
-        res.status(500).json({ message: 'Error adding points', error: error.message });
+        res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
 

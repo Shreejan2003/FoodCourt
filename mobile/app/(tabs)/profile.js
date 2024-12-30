@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, Text, StyleSheet, Alert, TouchableOpacity } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 import { getUserInfo } from "../api"; // Ensure correct API function import
 
 const Profile = () => {
@@ -7,6 +9,8 @@ const Profile = () => {
     username: "Loading...",
     points: "0",
   });
+
+  const navigation = useNavigation(); // For navigating back to login after logout
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -29,6 +33,18 @@ const Profile = () => {
     fetchUserInfo();
   }, []);
 
+  const logout = async () => {
+    try {
+      await AsyncStorage.removeItem("token"); // Remove token
+      console.log("Logged out successfully.");
+      Alert.alert("Logout Successful", "You have been logged out.");
+      navigation.navigate("login"); // Navigate to login screen
+    } catch (error) {
+      console.error("Logout Error:", error.message);
+      Alert.alert("Error", "Failed to log out. Please try again.");
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* Header Section */}
@@ -50,6 +66,11 @@ const Profile = () => {
       <View style={styles.statementSection}>
         <Text style={styles.statementText}>Statement</Text>
       </View>
+
+      {/* Logout Button */}
+      <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+        <Text style={styles.logoutButtonText}>Logout</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -128,5 +149,18 @@ const styles = StyleSheet.create({
   statementText: {
     fontSize: 16,
     color: "#333",
+  },
+  logoutButton: {
+    backgroundColor: "#800000",
+    padding: 15,
+    borderRadius: 10,
+    width: "90%",
+    alignItems: "center",
+    marginTop: 20,
+  },
+  logoutButtonText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });
